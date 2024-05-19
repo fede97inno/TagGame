@@ -10,7 +10,7 @@ ATagGameGameMode::ATagGameGameMode()
 {
 	// set default pawn class to our Blueprinted character
 	PrimaryActorTick.bCanEverTick = true;
-
+	NumberOfBalls = 4;
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
@@ -21,6 +21,23 @@ ATagGameGameMode::ATagGameGameMode()
 void ATagGameGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FString Path = "/Game/Blueprints/BP_Ball.BP_Ball";
+	UObject* LoadedBP = StaticLoadObject(UBlueprint::StaticClass(), nullptr, *Path);
+	UBlueprint* BP = Cast<UBlueprint>(LoadedBP);
+
+	//UBlueprint* BP = FindObject<UBlueprint>(NULL, *Path);
+
+	if (BP == nullptr || BP->GeneratedClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Blueprints not found"));
+		return;
+	}
+
+	for (int32 i = 0; i < NumberOfBalls; i++)
+	{
+		GetWorld()->SpawnActor(BP->GeneratedClass);	
+	}
 
 	ResetMatch();
 }
@@ -45,11 +62,6 @@ void ATagGameGameMode::ResetMatch()
 		Balls.Add(*It);
 	}
 
-	//for (TActorIterator<ABaseEnemyAIController> It(GetWorld()); It; ++It)
-	//{
-	//	Enemies.Add(*It);
-	//}
-
 	TArray<ATargetPoint*> RandomTargetPoints = TargetPoints;
 
 	for (int32 Index = 0; Index < Balls.Num(); Index++)
@@ -57,7 +69,6 @@ void ATagGameGameMode::ResetMatch()
 		const int32 TargetToRemoveIndex = FMath::RandRange(0, RandomTargetPoints.Num() - 1);
 		const ATargetPoint* Target = RandomTargetPoints[TargetToRemoveIndex];
 		RandomTargetPoints.RemoveAt(TargetToRemoveIndex);
-		UE_LOG(LogTemp, Warning, TEXT("Called"));
 
 		Balls[Index]->SetActorLocation(Target->GetActorLocation());
 	}

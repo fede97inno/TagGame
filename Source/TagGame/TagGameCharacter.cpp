@@ -58,7 +58,7 @@ void ATagGameCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-
+	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -67,6 +67,8 @@ void ATagGameCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	bCanMove = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -98,7 +100,7 @@ void ATagGameCharacter::Move(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (Controller != nullptr && bCanMove)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();

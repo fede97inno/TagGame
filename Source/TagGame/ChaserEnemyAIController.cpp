@@ -10,12 +10,25 @@
 void AChaserEnemyAIController::InitializeState()
 {
 	Super::InitializeState();
+	CoolDownTimer = SearchCoolDown;
+	
+	StartingPhase = MakeShared<FState>(
+		[this](AAIController* AIController)
+		{ 
+			SetBestBall(nullptr); 
+		},
+		nullptr,
+		[this](AAIController* AIController, const float DeltaTime) -> TSharedPtr<FState>
+		{
+			return SearchForBall;
+		}
+		);
 
 	GoToPlayer = MakeShared<FState>
 		(
-			[](AAIController* AIController)		// Enter
+			[this](AAIController* AIController)		// Enter
 			{
-				AIController->MoveToActor(AIController->GetWorld()->GetFirstPlayerController()->GetPawn(), 100.0f);
+				AIController->MoveToActor(GetPlayer(), 100.0f);
 			},
 			nullptr,
 			[this](AAIController* AIController, const float DeltaTime) -> TSharedPtr<FState>		// Tick
@@ -62,7 +75,16 @@ void AChaserEnemyAIController::InitializeState()
 				{
 					return GoToBall;
 				}
-
+				
+				CoolDownTimer -= DeltaTime;
+				UE_LOG(LogTemp, Warning, TEXT("%f"), CoolDownTimer);
+				
+				if (CoolDownTimer <= 0)
+				{
+					CoolDownTimer = SearchCoolDown;
+					return StartingPhase;
+				}
+				
 				return SearchForBall;
 			}
 			);
@@ -117,6 +139,8 @@ void AChaserEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 
 	BlackboardComponent = GetPawn()->GetComponentByClass<UBlackboardComponent>();
+	SetPlayer();
+
 	if (BlackboardComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Finding BlackboardComponent Success"));
@@ -143,8 +167,17 @@ ABall* AChaserEnemyAIController::GetBestBall() const
 	return Cast<ABall>(BlackboardComponent->GetValueAsObject(FName("BestBall")));
 }
 
-
 void AChaserEnemyAIController::SetBestBall(ABall* InBall)
 {
 	BlackboardComponent->SetValueAsObject(FName("BestBall"), InBall);
+}
+
+void AChaserEnemyAIController::SetPlayer()
+{
+	BlackboardComponent->SetValueAsObject(FName("Player"), GetWorld()->GetFirstPlayerController()->GetPawn());
+}
+
+APawn* AChaserEnemyAIController::GetPlayer() const
+{
+	return Cast<APawn>(BlackboardComponent->GetValueAsObject(FName("Player")));
 }

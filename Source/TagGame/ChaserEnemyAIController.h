@@ -16,16 +16,23 @@ class TAGGAME_API AChaserEnemyAIController : public ABaseEnemyAIController
 {
 	GENERATED_BODY()
 protected:
+	TSharedPtr<FState> StartingPhase;
 	TSharedPtr<FState> GoToPlayer;
 	TSharedPtr<FState> SearchForBall;
 	TSharedPtr<FState> GoToBall;
 	TSharedPtr<FState> GrabBall;
+	const float SearchCoolDown{ 5.0f };
+	float CoolDownTimer;
 public:
 	ABall* GetBestBall() const;
 	void SetBestBall(ABall* InBall);
+	
+	APawn* GetPlayer() const;
+	void SetPlayer();
+
 	void InitializeState() override;
 	void BeginPlay() override;
 	void Tick(const float DeltaTime) override;
-	//ABall* BestBall;
+	
 	UBlackboardComponent* BlackboardComponent;
 };

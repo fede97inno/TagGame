@@ -20,8 +20,8 @@ public:
 	void ResetMatch();
 	void Tick(float DeltaTime) override;
 	const TArray<ABall*>& GetBalls() const { return Balls; }
+	int32 NumberOfBalls;
 protected:
 	TArray<ATargetPoint*> TargetPoints;
 	TArray<ABall*> Balls;
-	//TArray<ABaseEnemyAIController*> Enemies;
 };
