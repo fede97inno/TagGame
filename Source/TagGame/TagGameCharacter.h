@@ -59,12 +59,16 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	float CoolDownTimer{3.0f};
+	float CoolDownMoving;
+
 	// To add mapping context
 	virtual void BeginPlay();
-
+	virtual void Tick(float DeltaTime) override;
 public:
 	bool bCanMove;
+	UFUNCTION(BlueprintCallable)
+	void StopMove();
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/

@@ -77,7 +77,7 @@ void AChaserEnemyAIController::InitializeState()
 				}
 				
 				CoolDownTimer -= DeltaTime;
-				UE_LOG(LogTemp, Warning, TEXT("%f"), CoolDownTimer);
+				//UE_LOG(LogTemp, Warning, TEXT("%f"), CoolDownTimer);
 				
 				if (CoolDownTimer <= 0)
 				{

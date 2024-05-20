@@ -21,7 +21,7 @@ protected:
 	TSharedPtr<FState> SearchForBall;
 	TSharedPtr<FState> GoToBall;
 	TSharedPtr<FState> GrabBall;
-	const float SearchCoolDown{ 5.0f };
+	const float SearchCoolDown{ 2.0f };
 	float CoolDownTimer;
 public:
 	ABall* GetBestBall() const;

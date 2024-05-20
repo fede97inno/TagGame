@@ -59,6 +59,7 @@ void ATagGameCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	
+	CoolDownMoving = CoolDownTimer;
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -69,6 +70,27 @@ void ATagGameCharacter::BeginPlay()
 	}
 
 	bCanMove = true;
+}
+
+void ATagGameCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!bCanMove)
+	{
+		CoolDownMoving -= DeltaTime;
+
+		if (CoolDownMoving < 0)
+		{
+			CoolDownMoving = CoolDownTimer;
+			bCanMove = true;
+		}
+	}
+}
+
+void ATagGameCharacter::StopMove()
+{
+	bCanMove = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
